@@ -1,6 +1,8 @@
 <template>
   <div>
     <h1>{{ titulo }}</h1>
+    <button @click="buscar()" class="btn btn-lith" style="float:left">Filtro</button>
+    <input type="search" style="float:left" v-model="textToSearch" @search="buscar()">
     <table>
       <thead>
         <tr>
@@ -14,7 +16,7 @@
           <th></th>
         </tr>
         <tr>
-          <th><input type="text" v-model="personaNuevaObj.id"></th>
+          <th><button @click="agregarPersona()">Agregar</button></th>
           <th><input type="text" v-model="personaNuevaObj.name"></th>
           <th><input type="text" v-model="personaNuevaObj.email"></th>
           <th><input type="text" v-model="personaNuevaObj.address"></th>
@@ -22,11 +24,10 @@
           <th><input type="text" v-model="personaNuevaObj.country"></th>
           <th><input type="text" v-model="personaNuevaObj.city"></th>
           <th>
-            <button @click="agregarPersona()">Agregar</button>
           </th>
         </tr>
         <tr v-if="indexParaEditar !== null">
-          <th><input type="text" v-model="personaEditarObj.id"></th>
+          <th><button @click="guardarPersona()">Guardar</button></th>
           <th><input type="text" v-model="personaEditarObj.name"></th>
           <th><input type="text" v-model="personaEditarObj.email"></th>
           <th><input type="text" v-model="personaEditarObj.address"></th>
@@ -34,7 +35,6 @@
           <th><input type="text" v-model="personaEditarObj.country"></th>
           <th><input type="text" v-model="personaEditarObj.city"></th>
           <th>
-            <button @click="guardarPersona()">Guardar</button>
           </th>
         </tr>
       </thead>
@@ -64,7 +64,7 @@ export default {
     return {
     titulo: 'Registro de Personas',
     personaNuevaObj:{
-        id: null,
+        id: 6,
         name: "",
         email: "",
         address: "",
@@ -160,8 +160,10 @@ export default {
     guardarPersona(){
       this.personas[this.indexParaEditar] = Object.assign({}, this.personaEditarObj);
       this.indexParaEditar = null;
+    },
+    buscar() {
+      this.personas = this.personas.filter(persona => persona.name.toLowerCase().includes(this.textToSearch.toLowerCase()));
     }
-
 
   },
   computed: {
