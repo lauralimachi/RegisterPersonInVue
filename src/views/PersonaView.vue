@@ -2,7 +2,8 @@
   <div>
     <h1>{{ titulo }}</h1>
     <button @click="buscar()" class="btn btn-lith" style="float:left">Filtro</button>
-    <input type="search" style="float:left" v-model="textToSearch" @search="buscar()">
+    <input type="search" style="float:left" v-model="textToSearch" @input="buscar()">
+    <br><br> <br> 
     <table>
       <thead>
         <tr>
@@ -23,8 +24,7 @@
           <th><input type="text" v-model="personaNuevaObj.phone"></th>
           <th><input type="text" v-model="personaNuevaObj.country"></th>
           <th><input type="text" v-model="personaNuevaObj.city"></th>
-          <th>
-          </th>
+          <th></th>
         </tr>
         <tr v-if="indexParaEditar !== null">
           <th><button @click="guardarPersona()">Guardar</button></th>
@@ -34,8 +34,7 @@
           <th><input type="text" v-model="personaEditarObj.phone"></th>
           <th><input type="text" v-model="personaEditarObj.country"></th>
           <th><input type="text" v-model="personaEditarObj.city"></th>
-          <th>
-          </th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -48,8 +47,8 @@
           <td>{{ persona.country }}</td>
           <td>{{ persona.city }}</td>
           <td>
-            <botton @click="elimintarPersona(index)"> Eliminar </botton>
-            <botton @click="editarPersona(persona,index)"> Editar </botton>
+            <button @click="elimintarPersona(index)">Eliminar</button>
+            <button @click="editarPersona(persona, index)">Editar</button>
           </td>
         </tr>
       </tbody>
@@ -62,8 +61,8 @@ export default {
   name: 'MiComponente',
   data() {
     return {
-    titulo: 'Registro de Personas',
-    personaNuevaObj:{
+      titulo: 'Registro de Personas',
+      personaNuevaObj: {
         id: 6,
         name: "",
         email: "",
@@ -71,8 +70,8 @@ export default {
         phone: "",
         country: "",
         city: ""
-    },
-     personaEditarObj:{
+      },
+      personaEditarObj: {
         id: null,
         name: "",
         email: "",
@@ -80,9 +79,16 @@ export default {
         phone: "",
         country: "",
         city: ""
-    },
-    indexParaEditar: null,
-    personas: [
+      },
+      indexParaEditar: null,
+      textToSearch: "",
+      personas: [],
+      personasOriginales: [] // Datos originales
+    };
+  },
+  mounted() {
+    // Inicializar con datos 
+    this.personasOriginales = [
       {
         id: 1,
         name: "Alice Johnson",
@@ -128,16 +134,12 @@ export default {
         country: "USA",
         city: "Los Angeles"
       }
-      ]
-    }
-  },
-  components: {
-    // Registro de componentes que se utilizaran.
+    ];
+    // Copia de datos originales a personas
+    this.personas = [...this.personasOriginales];
   },
   methods: {
-    // métodos que se pueden llamar desde la plantilla o desde otras partes del componente.
-    agregarPersona(){
-      // this.personas.push(Object.assign({} this.personaNuevaObj));
+    agregarPersona() {
       this.personas.push(this.personaNuevaObj);
       this.personaNuevaObj = {
         id: this.personas.length + 1,
@@ -147,50 +149,101 @@ export default {
         phone: "",
         country: "",
         city: ""
-      }
+      };
     },
-    elimintarPersona(index){
+    elimintarPersona(index) {
       this.personas.splice(index, 1);
-
     },
-    editarPersona(persona,index){
+    editarPersona(persona, index) {
       this.indexParaEditar = index;
       this.personaEditarObj = Object.assign({}, persona);
     },
-    guardarPersona(){
+    guardarPersona() {
       this.personas[this.indexParaEditar] = Object.assign({}, this.personaEditarObj);
       this.indexParaEditar = null;
     },
     buscar() {
-      this.personas = this.personas.filter(persona => persona.name.toLowerCase().includes(this.textToSearch.toLowerCase()));
+      const searchText = this.textToSearch.toLowerCase();
+      if (searchText === "") {
+        this.personas = [...this.personasOriginales];
+      } else {
+        this.personas = this.personasOriginales.filter(persona =>
+          persona.name.toLowerCase().includes(searchText) || persona.email.toLowerCase().includes(searchText)
+        );
+      }
     }
-
-  },
-  computed: {
-    // propiedades computadas que dependen de otras propiedades reactivas
-  },
-  props: {
-    // propiedades que el componente puede recibir.
-  },
-  emits: [] // los eventos personalizados que el componente puede emitir.
+  }
 }
 </script>
 
-<style scope>
+<style scoped>
 h1 {
-    color: #42b983;
+  color: #42b983;
 }
 table {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
 }
 th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
+  border: 1px solid #ddd;
+  padding: 8px;
 }
 th {
-    background-color: #f2f2f2;
-    text-align: left;
+  background-color: #f2f2f2;
+  text-align: left;
+}
+
+/* Estilo del botón de filtro */
+button.btn-lith {
+  background-color: #44bd98; 
+  color: white; 
+  padding: 5px 15px; 
+  border: none; 
+  border-radius: 5px; 
+  cursor: pointer;
+  font-size: 1em; 
+  font-weight: bold; 
+  transition: background-color 0.3s ease, transform 0.3s ease; 
+  margin-right: 10px; 
+}
+
+/* Estilo de los botones dentro de la tabla */
+button {
+  padding: 10px 15px; 
+  border: none; 
+  border-radius: 5px;
+  cursor: pointer; 
+  font-size: 0.9em; 
+  font-weight: bold; 
+  transition: background-color 0.3s ease, transform 0.3s ease; 
+  margin: 0 5px; 
+  background-color: #d5e6dc;
+}
+
+
+/* Estilo para la tabla */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 10px;
+}
+
+th {
+  background-color: #f2f2f2;
+  text-align: left;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f9f9f9; 
+}
+
+tbody tr:hover {
+  background-color: #f1f1f1; 
 }
 
 </style>
